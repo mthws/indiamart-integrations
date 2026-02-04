@@ -1,0 +1,15 @@
+[
+    {
+        "doctype": "Custom Field",
+        "dt": "CRM Lead",
+        "name": "CRM Lead-query_id_cf",
+        "fieldname": "query_id_cf",
+        "fieldtype": "Data",
+        "label": "Indiamart Query ID",
+        "unique": 1,
+        "read_only": 1,
+        "hidden": 0,
+        "in_list_view": 1,
+        "insert_after": "first_name"
+    }
+]
