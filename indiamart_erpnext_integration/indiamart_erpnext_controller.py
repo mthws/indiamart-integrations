@@ -189,15 +189,15 @@ def make_indiamart_lead_records(lead_values,integration_request,status='Queued',
 		return indiamart_lead.name
 	return
 
-def create_crm_note(lead_name, notes_html, title="Indiamart Lead Details"):
+def create_crm_note(lead_name, notes_html, title="Indiamart Lead Details", ref_doctype="CRM Lead"):
 	"""
-	Create FCRM Note linked to CRM Lead
+	Create FCRM Note linked to CRM Lead or Deal
 	"""
 	note = frappe.new_doc('FCRM Note')
 	note.update({
 		'title': title,
 		'content': notes_html,
-		'reference_doctype': 'CRM Lead',
+		'reference_doctype': ref_doctype,
 		'reference_docname': lead_name
 	})
 	note.flags.ignore_permissions = True
@@ -343,7 +343,9 @@ def update_existing_lead(lead_name,lead_values):
 			create_crm_note(lead.name, notes_html, "New Requirement")
 			
 			lead.query_id_cf=lead_values.get('UNIQUE_QUERY_ID')
-			lead.status='Lead'
+			# Update status to a valid one from CRM
+			if frappe.db.exists('CRM Lead Status', 'Contacted'):
+				lead.status='Contacted'
 			lead.flags.ignore_mandatory = True
 			lead.flags.ignore_permissions = True
 			lead.save()	
@@ -364,7 +366,9 @@ def update_existing_lead(lead_name,lead_values):
 								)
 
 			from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
-			deal_name = convert_to_deal(lead=lead_name)
+			lead_doc = frappe.get_doc('CRM Lead', lead_name)
+			lead_doc.flags.ignore_permissions = True
+			deal_name = convert_to_deal(lead=lead_name, doc=lead_doc)
 			deal = frappe.get_doc("CRM Deal", deal_name)
 			deal.flags.ignore_mandatory = True
 			deal.flags.ignore_permissions = True
@@ -373,10 +377,10 @@ def update_existing_lead(lead_name,lead_values):
 				deal.status = status
 			deal.save()			
 			
-			create_crm_note(deal.name, to_discuss_html, "New Requirement")
+			create_crm_note(deal.name, to_discuss_html, "New Requirement", "CRM Deal")
 
 			opportunity_html='<br><br><div><B>New Deal {0} was created</B>'.format(deal.name)
-			create_crm_note(lead_name, opportunity_html, "New Deal Created")
+			create_crm_note(lead_name, opportunity_html, "New Deal Created", "CRM Lead")
 
 			lead=frappe.get_doc('CRM Lead', lead_name)
 			# lead.reload()
