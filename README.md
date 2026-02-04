@@ -1,40 +1,70 @@
-# Indiamart Frappe CRM Integration
+### Indiamart Erpnext Integration by GreyCube.in
 
-This app integrates [IndiaMART CRM API (Version 2)](https://help.indiamart.com/knowledge-base/lms-crm-integration-v2/) with [Frappe CRM](https://frappe.io/crm).
+[Indiamart CRM API **Version 2**(Lead)](https://help.indiamart.com/knowledge-base/lms-crm-integration-v2/), integration with ERPNext by [GreyCube.in](https://greycube.in/) 🚀️
 
-## 🚀 Migration to Frappe CRM
-This app has been migrated from ERPNext core to the standalone Frappe CRM app. It now uses `CRM Lead` and `CRM Deal` doctypes instead of the old ERPNext `Lead`.
+![](https://greycube.in/files/indiamart_greycube.png)
 
-### ✅ Implementation Checklist
-- [x] **Target App**: Changed integration target from ERPNext core to **Frappe CRM**.
-- [x] **Primary Doctype**: Now creates **CRM Lead** records.
-- [x] **Inquiry Mapping**:
-    - `UNIQUE_QUERY_ID` → `query_id_cf` (Custom Field)
-    - `SENDER_EMAIL` → `email` (Changed from `email_id`)
-    - `SENDER_COMPANY` → `organization` (Changed from `company_name`)
-- [x] **Repeat Inquiries**: 
-    - Automatically detects repeat leads via Mobile/Email.
-    - Creates a **CRM Deal** for repeat inquiries from Qualified/Converted leads.
-- [x] **Detail Storage**: 
-    - Uses **FCRM Note** to store rich HTML details of the inquiry (Product, Category, Message).
-    - Stores address information as a separate Note for better visibility.
-- [x] **Immediate Processing**:
-    - Modified to process leads **instantly** upon insertion.
-    - No longer dependent on background workers (bypasses "Queued" status delay).
-- [x] **Settings UI**:
-    - Updated to link with `CRM Lead Source` and `CRM Deal Status`.
-- [x] **Dashboard Integration**:
-    - Custom JS to show Indiamart links directly on the **CRM Lead** dashboard.
+**What does the app do?**
 
-## Features
-- Pulls leads from IndiaMART every 6 minutes.
-- Handles Duplicates/Repeat Leads intelligently.
-- Maintains Integration Logs for troubleshooting.
-- Allows manual lead pull for specific date ranges.
+* Indiamart.com : It is a market place where buyers come to fulfill their purchase requirements. i.e. they generate Leads
+* ERPNext : It is open source ERP
+* Indiamart Erpnext Integration (App): It automatically pulls purchase inquires from indiamart and creats lead in ERPNext. App is developed by [GreyCube.in](https://greycube.in/) (official and certified ERPNext service provider)
 
-## Setup
-1. Get IndiaMART CRM API Key from the [IndiaMART Seller Panel](https://seller.indiamart.com/leadmanager/crmapi).
-2. Configure **Indiamart Settings** in Frappe CRM.
-3. Map your "Query Types" to `CRM Lead Source`.
+---
 
-Developed by [GreyCube Technologies](https://greycube.in/)
+**Benefits**
+
+* No Manual Entry/intervention required
+* No Human Erorr
+* Pulls all leads based on the time
+* Don't miss out any potential leads
+* Focus on lead conversion and not on lead data entry/handling
+* Make full use of ERPNext CRM module
+* As the lead gets generated automatically in ERPNext, you can serve your customers with no delay and do more business than competitors
+
+**Features**
+
+* Pull Leads from IndiaMart via API every 6 mins for 7 mins duration. Overlap is such that no lead is lost.
+* Create Leads automatically in ERPNext
+* Maps respective fields of IndiaMart with ERPNext Lead.👀️
+  *![](https://greycube.in/files/lead_data_captured_erpnext_greycube.png)
+* Auto creation of contacts/address in ERPNext
+* Handle Duplicate/ Repeat Leads based on mobile_no/ email
+* Automatically create Opportunity for repeat leads
+* IndiaMart Integration Log maintained
+* Facility to map indiamart provided Query Type in Inquiry to your Lead Source
+* Facility to manaully pull leads for specific time frame
+* App workspace with all related links
+  *![](https://greycube.in/files/indiamart_workspace_erpnext_greycube.png)
+* Connection dashboard at top of releated doctypes in ERPNext
+* Receive Auto Notification incase of error during Lead Integration
+* All [IndiaMart Integration Best Practices ](https://help.indiamart.com/knowledge-base/lms-crm-integration-v2/)followed
+
+**How to setup?**
+
+1. Get mobile no and API Key from indiamart
+
+* Mobile: This is the primary mobile number of your account registered with IndiaMART
+* API Key : Go to seller.indiamart.com->Login to Account->Lead Manager( under 3 dots menu)->Click on CRM Integreation, it generates a unique API Key which is received on your primary email.
+* OR  go to key generation page direct link : https://seller.indiamart.com/leadmanager/crmapi
+  *![](https://greycube.in/files/indiamart_api_crm_key.png)
+
+2. Enter all details in Indiamart Settings doctype. ex URL https://<yourdomain.com>/app/indiamart-settings
+   *![](https://greycube.in/files/erpnext_indiamart_settings_greycube.png)
+   
+3. v14: CRM settings-> Auto creation of contacts : check
+![image (12)](https://user-images.githubusercontent.com/29812965/233940505-6bb36efc-899a-4121-a92d-25cfec34425c.png)
+
+**Support**
+
+* The steps are well documented above and app is tested with large amount of real indiamart data. So as such no help will be required.
+* Setup support : It would be maximum 1 hour. 500 INR / 10$. Email at <admin@greycube.in>
+* All other support: Email at <admin@greycube.in> with details to get quote
+
+**[Contact us](https://greycube.in/contact) for customization**
+
+* Automatic mapping of Territory based on IndiaMart Lead Origin
+* Automatic mapping of Leads based on Territory Manager
+* Automatic mapping of Leads based on Round Robin ALgorithm for multiple Sales person in a specific Territory
+* Single dashboard view of lead response
+* Integrate your sales team call data with lead
