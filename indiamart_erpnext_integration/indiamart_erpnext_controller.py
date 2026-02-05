@@ -65,10 +65,11 @@ def get_indiamart_api_url(indiamart_settings,start_time=None,end_time=None):
 		# set start time as minus 5 minutes the last api call time
 		print("indiamart_settings.get('last_api_call_time')",indiamart_settings.get('last_api_call_time'))
 		if indiamart_settings.get('last_api_call_time'):
-			start_time=get_datetime(indiamart_settings.get('last_api_call_time')) - datetime.timedelta(minutes=7)
+			# Look back 24 hours to ensure no leads are missed due to IndiaMART sync delays
+			start_time = get_datetime(indiamart_settings.get('last_api_call_time')) - datetime.timedelta(minutes=7)
 		else:
-			# first time, last_api_call_time will be empty
-			start_time= now_datetime() - datetime.timedelta(minutes=7)
+			# If no last call time, look back 24 hours
+			start_time = now_datetime() - datetime.timedelta(minutes=7)
 
 		start_time=format_datetime(start_time,URL_DATETIME_FORMAT)
 		now_api_call_time=now_datetime()
@@ -295,7 +296,7 @@ def make_erpnext_lead_from_inidamart(lead_values,indiamart_lead_name=None):
 						lead.flags.ignore_permissions = True
 						lead.insert()
 						
-						create_crm_note(lead.name, notes_html, "Indiamart Lead Details")
+						create_crm_note(lead.name, notes_html, "New IndiaMART Inquiry")
 						
 						if address:
 							address_html = "<div><b>Address:</b></div><div>{0}</div>".format(address)
@@ -325,8 +326,9 @@ def update_existing_lead(lead_name,lead_values):
 		existing_lead_output=None
 		lead_status = frappe.db.get_value('CRM Lead', lead_name, 'status')
 
-		if lead_status not in ['Qualified','Converted']:
-			notes_html="<br><br><div><B>New Requirement</B></div><div>Product Name :{0}</div><div>Category :{1}</div><div>Subject :{2}</div><div>Message :{3}</div><div>Lead Date :{4}</div><div>Alternate EmailID :{5}</div><div>Alternate Mobile :{6}</div><div>India Mart Query ID :{7}</div>" \
+		# Create a deal if the lead is already being processed (Nurture, Qualified)
+		if lead_status not in ['Nurture', 'Qualified', 'Converted']:
+			notes_html="<div>Product Name :{0}</div><div>Category :{1}</div><div>Subject :{2}</div><div>Message :{3}</div><div>Lead Date :{4}</div><div>Alternate EmailID :{5}</div><div>Alternate Mobile :{6}</div><div>India Mart Query ID :{7}</div>" \
 			.format( \
 								frappe.bold(lead_values.get('QUERY_PRODUCT_NAME','Not specified')),
 								frappe.bold(lead_values.get('QUERY_MCAT_NAME','Not specified')),
@@ -340,7 +342,7 @@ def update_existing_lead(lead_name,lead_values):
 
 			lead=frappe.get_doc('CRM Lead', lead_name)
 			# lead.reload()
-			create_crm_note(lead.name, notes_html, "New Requirement")
+			create_crm_note(lead.name, notes_html, "New IndiaMART Inquiry")
 			
 			lead.query_id_cf=lead_values.get('UNIQUE_QUERY_ID')
 			# Update status to a valid one from CRM
@@ -353,7 +355,7 @@ def update_existing_lead(lead_name,lead_values):
 			existing_lead_output='Lead notes updated for {0}'.format(lead_name)
 			return existing_lead_output	
 		else:
-			to_discuss_html="New Requirement \n Product Name : {0} \n Category : {1} \n Subject :{2} \n Message :{3} \n Lead Date :{4} \n Alternate EmailID :{5} \n Alternate Mobile :{6} \n India Mart Query ID :{7}" \
+			to_discuss_html="Product Name : {0} \n Category : {1} \n Subject :{2} \n Message :{3} \n Lead Date :{4} \n Alternate EmailID :{5} \n Alternate Mobile :{6} \n India Mart Query ID :{7}" \
 			.format( \
 								frappe.bold(lead_values.get('QUERY_PRODUCT_NAME','Not specified')),
 								frappe.bold(lead_values.get('QUERY_MCAT_NAME','Not specified')),
@@ -377,7 +379,7 @@ def update_existing_lead(lead_name,lead_values):
 				deal.status = status
 			deal.save()			
 			
-			create_crm_note(deal.name, to_discuss_html, "New Requirement", "CRM Deal")
+			create_crm_note(deal.name, to_discuss_html, "New IndiaMART Inquiry", "CRM Deal")
 
 			opportunity_html='<br><br><div><B>New Deal {0} was created</B>'.format(deal.name)
 			create_crm_note(lead_name, opportunity_html, "New Deal Created", "CRM Lead")
