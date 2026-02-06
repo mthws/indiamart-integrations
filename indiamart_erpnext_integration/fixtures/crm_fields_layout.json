@@ -1,0 +1,20 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Lead",
+  "layout": "[{\"label\": \"Details\", \"name\": \"details_section\", \"opened\": true, \"columns\": [{\"name\": \"column_ZgLG\", \"fields\": [\"organization\", \"industry\", \"lead_owner\"]}, {\"name\": \"column_TbYq\", \"fields\": [\"website\", \"job_title\"]}, {\"name\": \"column_OKSX\", \"fields\": [\"territory\", \"source\"]}]}, {\"label\": \"Person\", \"name\": \"person_section\", \"opened\": true, \"columns\": [{\"name\": \"column_6c5g\", \"fields\": [\"salutation\", \"email\"]}, {\"name\": \"column_1n7Q\", \"fields\": [\"first_name\", \"mobile_no\"]}, {\"name\": \"column_cT6C\", \"fields\": [\"last_name\"]}]}, {\"label\": \"IndiaMART Product Details\", \"name\": \"indiamart_product_details_section\", \"opened\": true, \"columns\": [{\"name\": \"indiamart_col_left\", \"fields\": [\"query_id_cf\", \"indiamart_product\", \"indiamart_quantity\", \"indiamart_subject\"]}, {\"name\": \"indiamart_col_right\", \"fields\": [\"indiamart_category\", \"indiamart_city\", \"indiamart_state\"]}]}, {\"label\": \"IndiaMART Message\", \"name\": \"indiamart_message_section\", \"opened\": true, \"columns\": [{\"name\": \"indiamart_msg_col\", \"fields\": [\"indiamart_message\"]}]}]",
+  "modified": "2026-02-06 14:02:32.190235",
+  "name": "CRM Lead-Data Fields",
+  "type": "Data Fields"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "CRM Fields Layout",
+  "dt": "CRM Lead",
+  "layout": "[{\"label\": \"Details\", \"name\": \"details_section\", \"opened\": true, \"columns\": [{\"name\": \"column_kl92\", \"fields\": [\"organization\", \"website\", \"territory\", \"industry\", \"job_title\", \"source\", \"lead_owner\"]}]}, {\"label\": \"Person\", \"name\": \"person_section\", \"opened\": true, \"columns\": [{\"name\": \"column_XmW2\", \"fields\": [\"salutation\", \"first_name\", \"last_name\", \"email\", \"mobile_no\"]}]}, {\"label\": \"IndiaMART Product Details\", \"name\": \"indiamart_product_details_section\", \"opened\": true, \"columns\": [{\"name\": \"indiamart_col_1\", \"fields\": [\"indiamart_product\", \"indiamart_quantity\"]}]}]",
+  "modified": "2026-02-06 13:55:48.703674",
+  "name": "CRM Lead-Side Panel",
+  "type": "Side Panel"
+ }
+]

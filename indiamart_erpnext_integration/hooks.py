@@ -195,8 +195,28 @@ user_data_fields = [
 # For example: Role, Gender, etc.
 # translated_search_doctypes = []
 fixtures = [
-      {
+    {
         "dt": "Custom Field", 
-        "filters": [["name", "in", ["CRM Lead-query_id_cf"]]]
-      }
+        "filters": [
+            ["dt", "=", "CRM Lead"],
+            ["fieldname", "in", [
+                "indiamart_product_details_section",
+                "query_id_cf",
+                "indiamart_product",
+                "indiamart_quantity",
+                "indiamart_subject",
+                "indiamart_category",
+                "indiamart_message",
+                "indiamart_city",
+                "indiamart_state"
+            ]]
+        ]
+    },
+    {
+        "dt": "CRM Fields Layout",
+        "filters": [
+            ["dt", "=", "CRM Lead"],
+            ["type", "in", ["Side Panel", "Data Fields"]]
+        ]
+    }
 ]

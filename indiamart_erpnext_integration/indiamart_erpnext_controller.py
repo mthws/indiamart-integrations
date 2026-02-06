@@ -140,6 +140,8 @@ def fetch_indiamart_data_and_make_integration_request(api_url,now_api_call_time)
 		
 	if not error:
 		integration_request=create_request_log(data=frappe._dict(request_log_data),integration_type="Remote",service_name="Indiamart")
+		# Log full response for debugging
+		output['raw_response'] = response
 		frappe.db.set_value('Integration Request', integration_request.name, 'output',json.dumps(output) )
 	else:
 		integration_request=create_request_log(data=frappe._dict(request_log_data),integration_type="Remote",service_name="Indiamart",error=frappe._dict({"error":error}))
@@ -176,6 +178,22 @@ def fetch_indiamart_data_and_make_integration_request(api_url,now_api_call_time)
 		frappe.db.set_value('Integration Request', integration_request.name, 'status', 'Completed')
 		frappe.db.set_value('Indiamart Settings','Indiamart Settings', 'last_api_call_time', now_api_call_time)
 	return
+
+def extract_quantity_from_message(message):
+	"""
+	Extracts quantity from IndiaMART message string like:
+	'Quantity :   1<br> Quantity Unit :   piece<br>'
+	"""
+	if not message:
+		return None
+	
+	# Regex to find 'Quantity : <value><br>' or 'Quantity : <value>' at end of line
+	# Case insensitive, matching 'Quantity', optional spaces, colon, optional spaces, capturing group for value
+	# Stops at <, newline, or end of string
+	match = re.search(r"Quantity\s*:\s*(.*?)(?:<|\n|$)", message, re.IGNORECASE)
+	if match:
+		return match.group(1).strip()
+	return None
 
 def make_indiamart_lead_records(lead_values,integration_request,status='Queued',output='Not Processed'):
 	existing_indiamart_lead = frappe.db.get_value("Indiamart Lead", {"query_id": lead_values.get('UNIQUE_QUERY_ID')})
@@ -277,6 +295,15 @@ def make_erpnext_lead_from_inidamart(lead_values,indiamart_lead_name=None):
 										frappe.bold(lead_values.get('MOBILE_ALT','Not specified')),
 										frappe.bold(lead_values.get('UNIQUE_QUERY_ID','Not specified'))
 										)
+						
+						# Extract Quantity from Message if not provided directly
+						import re
+						extracted_qty = lead_values.get('QUANTITY')
+						if not extracted_qty and lead_values.get('QUERY_MESSAGE'):
+							# Look for "Quantity : <value>" pattern
+							qty_match = re.search(r'Quantity\s*:\s*([^<]+)', lead_values.get('QUERY_MESSAGE'), re.IGNORECASE)
+							if qty_match:
+								extracted_qty = qty_match.group(1).strip()
 
 						address=lead_values.get('SENDER_ADDRESS')
 
@@ -288,6 +315,14 @@ def make_erpnext_lead_from_inidamart(lead_values,indiamart_lead_name=None):
 							"source":source or '',
 							"organization":company_name,
 							"query_id_cf":lead_values.get('UNIQUE_QUERY_ID'),
+							"indiamart_product": lead_values.get('QUERY_PRODUCT_NAME'),
+							"indiamart_subject": lead_values.get('SUBJECT'),
+							"indiamart_category": lead_values.get('QUERY_MCAT_NAME'),
+							"indiamart_quantity": extracted_qty,
+							"indiamart_city": lead_values.get('SENDER_CITY'),
+							"indiamart_state": lead_values.get('SENDER_STATE'),
+							"indiamart_state": lead_values.get('SENDER_STATE'),
+							"indiamart_message": (lead_values.get('QUERY_MESSAGE') or "").replace("<br>", "\n").replace("<br/>", "\n").replace("<br />", "\n"),
 							'lead_owner':lead_owner,
 							'status': 'New'
 						}
@@ -344,7 +379,18 @@ def update_existing_lead(lead_name,lead_values):
 			# lead.reload()
 			create_crm_note(lead.name, notes_html, "New IndiaMART Inquiry")
 			
+			# Extract Quantity from Message for existing lead logic
+			extracted_qty = lead_values.get('QUANTITY') or extract_quantity_from_message(lead_values.get('QUERY_MESSAGE'))
+
+
 			lead.query_id_cf=lead_values.get('UNIQUE_QUERY_ID')
+			lead.indiamart_product = lead_values.get('QUERY_PRODUCT_NAME')
+			lead.indiamart_subject = lead_values.get('SUBJECT')
+			lead.indiamart_category = lead_values.get('QUERY_MCAT_NAME')
+			lead.indiamart_quantity = extracted_qty
+			lead.indiamart_city = lead_values.get('SENDER_CITY')
+			lead.indiamart_state = lead_values.get('SENDER_STATE')
+			lead.indiamart_message = (lead_values.get('QUERY_MESSAGE') or "").replace("<br>", "\n").replace("<br/>", "\n").replace("<br />", "\n")
 			# Update status to a valid one from CRM
 			if frappe.db.exists('CRM Lead Status', 'Contacted'):
 				lead.status='Contacted'
